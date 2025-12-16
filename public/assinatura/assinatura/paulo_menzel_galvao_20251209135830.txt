@@ -1,0 +1,24 @@
+==============================================
+       REGISTRO DE ASSINATURA DIGITAL
+==============================================
+
+STATUS: OK
+
+DADOS DO REGISTRO:
+----------------------------------------------
+Nome: Paulo Menzel Galvao
+Cargo: Medico
+Empresa/Instituição: Hospital São Francisco de Assis
+Número de Registro: CRM 7356/GO
+----------------------------------------------
+
+INFORMAÇÕES TÉCNICAS:
+----------------------------------------------
+Data e Hora: 09/12/2025 13:58:30
+Arquivo de Imagem: paulo_menzel_galvao_20251209135830.png
+IP do Cliente: 177.174.208.87
+User Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1
+----------------------------------------------
+
+Assinatura digital salva com sucesso!
+==============================================

@@ -1,0 +1,112 @@
+/* Estilos para a página de Assinaturas */
+
+.carimbo-wrapper {
+  /* Garantir que o conteúdo não afete o layout global */
+  isolation: isolate;
+  position: relative;
+}
+
+/* Escopar estilos do carimbo para não afetar o layout do site */
+#carimbo-content {
+  /* Resetar apenas dentro do container */
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+#carimbo-content * {
+  box-sizing: border-box;
+}
+
+/* Garantir que o container não sobrescreva o layout */
+.sistema-container {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 2rem;
+}
+
+/* Remover qualquer banner ou carousel que possa aparecer */
+#carimbo-content .carousel,
+#carimbo-content .banner,
+#carimbo-content img[alt*="banner"],
+#carimbo-content img[alt*="carousel"] {
+  display: none !important;
+}
+
+/* Remover título "Assinatura Digital" dentro do carimbo */
+#carimbo-content h1 {
+  display: none !important;
+}
+
+/* Garantir que o conteúdo não ultrapasse os limites */
+#carimbo-content .container {
+  max-width: 100%;
+  padding: 0 15px;
+}
+
+/* Largura total no mobile */
+@media (max-width: 768px) {
+  .sistema-container {
+    border-radius: 0 !important;
+    margin: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+  
+  .container-xxl {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    max-width: 100% !important;
+  }
+  
+  .container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    max-width: 100% !important;
+  }
+  
+  #carimbo-content {
+    padding: 15px !important;
+  }
+  
+  /* Garantir que o conteúdo interno também use largura total */
+  #carimbo-content .container {
+    padding: 8px 4px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  
+  /* Reorganizar layout no mobile: formulário, assinatura, depois preview */
+  #carimbo-content .main-content {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+  
+  /* Preview section aparece depois da signature section no mobile */
+  #carimbo-content .preview-section {
+    order: 3 !important;
+    display: block !important;
+  }
+  
+  #carimbo-content .form-section {
+    order: 1 !important;
+  }
+  
+  #carimbo-content .signature-section {
+    order: 2 !important;
+  }
+}
+
+/* Desktop: manter layout original */
+@media (min-width: 769px) {
+  .sistema-container {
+    max-width: 100%;
+  }
+  
+  #carimbo-content .preview-section {
+    display: block !important;
+  }
+}
+

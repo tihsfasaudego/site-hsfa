@@ -1,0 +1,41 @@
+/* Estilos para a página de Assinaturas */
+
+.carimbo-wrapper {
+  /* Garantir que o conteúdo não afete o layout global */
+  isolation: isolate;
+  position: relative;
+}
+
+/* Escopar estilos do carimbo para não afetar o layout do site */
+#carimbo-content {
+  /* Resetar apenas dentro do container */
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+#carimbo-content * {
+  box-sizing: border-box;
+}
+
+/* Garantir que o container não sobrescreva o layout */
+.sistema-container {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 2rem;
+}
+
+/* Remover qualquer banner ou carousel que possa aparecer */
+#carimbo-content .carousel,
+#carimbo-content .banner,
+#carimbo-content img[alt*="banner"],
+#carimbo-content img[alt*="carousel"] {
+  display: none !important;
+}
+
+/* Garantir que o conteúdo não ultrapasse os limites */
+#carimbo-content .container {
+  max-width: 100%;
+  padding: 0 15px;
+}

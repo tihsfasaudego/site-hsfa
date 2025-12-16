@@ -1,0 +1,42 @@
+/* Importar o CSS do projeto original */
+/* @import url('/css/style.css'); - Arquivo não existe, comentado */
+
+/* Estilos globais adicionais */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Montserrat', 'Roboto', sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* Ajustes para React Router */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+/* Spinner personalizado */
+#spinner {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .5s ease-out, visibility 0s linear .5s;
+  z-index: 99999;
+}
+
+#spinner.show {
+  transition: opacity .5s ease-out, visibility 0s linear 0s;
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Botão WhatsApp flutuante - estilos movidos para WhatsAppFloat.css */
+

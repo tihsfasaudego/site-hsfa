@@ -1,0 +1,133 @@
+/* Estilos específicos para a página de Exames */
+
+.exame-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.exame-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(25, 111, 117, 0.2);
+}
+
+.exame-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.exame-image-wrapper {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exame-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.5s ease;
+  background: #f8f9fa;
+}
+
+.exame-card:hover .exame-image {
+  transform: scale(1.1);
+}
+
+.exame-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(25, 111, 117, 0.9) 0%, rgba(145, 198, 206, 0.9) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.exame-card:hover .exame-overlay {
+  opacity: 1;
+}
+
+.exame-overlay-content {
+  color: white;
+  text-align: center;
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.exame-card:hover .exame-overlay-content {
+  transform: translateY(0);
+}
+
+.exame-info {
+  padding: 1.5rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: white;
+}
+
+.exame-title {
+  color: #1C2035;
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+  transition: color 0.3s ease;
+}
+
+.exame-card:hover .exame-title {
+  color: #196F75;
+}
+
+.exame-arrow {
+  color: #196F75;
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+.exame-card:hover .exame-arrow {
+  transform: translateX(5px);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .exame-info {
+    padding: 1.25rem;
+  }
+  
+  .exame-title {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .exame-info {
+    padding: 1rem;
+  }
+}
+
+/* Loading state */
+.spinner-border {
+  border-color: #196F75;
+  border-right-color: transparent;
+}
+

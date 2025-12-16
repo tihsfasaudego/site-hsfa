@@ -1,0 +1,213 @@
+/* Estilos para a página de Editais */
+
+.edital-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 1px solid #e9ecef;
+}
+
+.edital-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(25, 111, 117, 0.15);
+  border-color: #196F75;
+}
+
+.edital-content {
+  display: flex;
+  align-items: center;
+  padding: 2rem;
+  gap: 2rem;
+}
+
+.edital-icon-wrapper {
+  flex-shrink: 0;
+}
+
+.edital-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  transition: all 0.3s ease;
+}
+
+.pdf-icon {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+}
+
+.image-icon {
+  background: linear-gradient(135deg, #196F75 0%, #155a60 100%);
+  color: white;
+}
+
+.edital-card:hover .edital-icon {
+  transform: scale(1.1);
+}
+
+.edital-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.edital-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.edital-title {
+  color: #1C2035;
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin: 0;
+  line-height: 1.4;
+  flex: 1;
+  min-width: 200px;
+}
+
+.edital-periodo {
+  display: inline-flex;
+  align-items: center;
+  background: #f8f9fa;
+  color: #196F75;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.edital-descricao {
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.edital-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.edital-cnpj,
+.edital-tipo {
+  display: inline-flex;
+  align-items: center;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.edital-cnpj i,
+.edital-tipo i {
+  color: #196F75;
+}
+
+.edital-action {
+  flex-shrink: 0;
+}
+
+.btn-edital {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background: #196F75;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-edital:hover {
+  background: #155a60;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(25, 111, 117, 0.3);
+}
+
+.btn-edital i {
+  font-size: 0.9rem;
+}
+
+/* Responsividade */
+@media (max-width: 991px) {
+  .edital-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .edital-icon-wrapper {
+    align-self: center;
+  }
+
+  .edital-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .edital-action {
+    width: 100%;
+  }
+
+  .btn-edital {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .edital-content {
+    padding: 1.5rem;
+  }
+
+  .edital-icon {
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
+  }
+
+  .edital-title {
+    font-size: 1.1rem;
+  }
+
+  .edital-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .edital-content {
+    padding: 1.25rem;
+  }
+
+  .edital-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 1.75rem;
+  }
+
+  .edital-title {
+    font-size: 1rem;
+  }
+
+  .edital-descricao {
+    font-size: 0.9rem;
+  }
+}
+

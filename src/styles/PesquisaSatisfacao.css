@@ -1,0 +1,125 @@
+/* Estilos específicos para a página de Pesquisa de Satisfação */
+
+.form-step {
+  transition: all 0.3s ease;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.progress {
+  height: 10px;
+  border-radius: 5px;
+  background-color: #e9ecef;
+}
+
+.progress-bar {
+  background-color: #196F75;
+  transition: width 0.3s ease;
+}
+
+.rating-container {
+  padding: 10px 0;
+}
+
+.rating-container .form-range {
+  cursor: pointer;
+}
+
+.setor-item {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.setor-item:hover {
+  background: #e9ecef;
+}
+
+.setor-grupo {
+  border-left: 3px solid #196F75;
+  padding-left: 15px;
+}
+
+.setor-grupo h5 {
+  color: #196F75;
+  font-weight: 600;
+}
+
+.card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.btn-primary {
+  background-color: #196F75;
+  border-color: #196F75;
+  padding: 10px 30px;
+}
+
+.btn-primary:hover {
+  background-color: #145c61;
+  border-color: #145c61;
+}
+
+.btn-success {
+  background-color: #196F75;
+  border-color: #196F75;
+  padding: 10px 30px;
+}
+
+.btn-success:hover {
+  background-color: #155a60;
+  border-color: #155a60;
+}
+
+.btn-outline-primary {
+  color: #196F75;
+  border-color: #196F75;
+  padding: 10px 30px;
+}
+
+.btn-outline-primary:hover {
+  background-color: #196F75;
+  border-color: #196F75;
+  color: white;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #196F75;
+  box-shadow: 0 0 0 0.2rem rgba(25, 111, 117, 0.25);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .setor-grupo {
+    border-left: none;
+    padding-left: 0;
+    border-top: 3px solid #196F75;
+    padding-top: 15px;
+    margin-top: 20px;
+  }
+  
+  .card-body {
+    padding: 20px !important;
+  }
+}
+

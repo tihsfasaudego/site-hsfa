@@ -3,7 +3,7 @@
 # ============================================
 # Script de Deploy Automatizado - HSFA Saúde
 # ============================================
-# Uso: ./deploy.sh [--skip-build] [--skip-pm2]
+# Uso: ./deploy.sh [--skip-build] [--skip-pm2] [--skip-pull] [--branch=BRANCH]
 
 set -e  # Parar em caso de erro
 
@@ -17,6 +17,8 @@ NC='\033[0m' # No Color
 # Flags
 SKIP_BUILD=false
 SKIP_PM2=false
+SKIP_PULL=false
+GIT_BRANCH=""
 
 # Processar argumentos
 for arg in "$@"; do
@@ -27,6 +29,14 @@ for arg in "$@"; do
             ;;
         --skip-pm2)
             SKIP_PM2=true
+            shift
+            ;;
+        --skip-pull)
+            SKIP_PULL=true
+            shift
+            ;;
+        --branch=*)
+            GIT_BRANCH="${arg#*=}"
             shift
             ;;
         *)
@@ -43,6 +53,132 @@ echo ""
 if [ ! -f "package.json" ]; then
     echo -e "${RED}❌ Erro: package.json não encontrado. Execute este script na raiz do projeto.${NC}"
     exit 1
+fi
+
+# Verificar se Git está instalado
+if ! command -v git &> /dev/null; then
+    echo -e "${RED}❌ Erro: Git não está instalado.${NC}"
+    exit 1
+fi
+
+# Verificar se é um repositório Git
+if [ ! -d ".git" ]; then
+    echo -e "${YELLOW}⚠️  Diretório não é um repositório Git. Pulando atualização do GitHub.${NC}"
+    SKIP_PULL=true
+else
+    echo -e "${GREEN}✅ Repositório Git detectado${NC}"
+    
+    # Detectar branch atual se não foi especificada
+    if [ -z "$GIT_BRANCH" ]; then
+        GIT_BRANCH=$(git branch --show-current 2>/dev/null || git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")
+    fi
+    echo -e "${BLUE}📌 Branch: ${GIT_BRANCH}${NC}"
+    
+    # Verificar se há remote configurado
+    if ! git remote | grep -q .; then
+        echo -e "${YELLOW}⚠️  Nenhum remote Git configurado. Pulando atualização do GitHub.${NC}"
+        SKIP_PULL=true
+    else
+        GIT_REMOTE=$(git remote | head -n1)
+        GIT_REMOTE_URL=$(git remote get-url "$GIT_REMOTE" 2>/dev/null || echo "")
+        if [ -n "$GIT_REMOTE_URL" ]; then
+            echo -e "${BLUE}🔗 Remote: ${GIT_REMOTE} (${GIT_REMOTE_URL})${NC}"
+        fi
+    fi
+fi
+
+# Atualizar do GitHub
+if [ "$SKIP_PULL" = false ]; then
+    echo ""
+    echo -e "${BLUE}📥 Atualizando código do GitHub...${NC}"
+    
+    # Verificar se há mudanças locais não commitadas
+    if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
+        echo -e "${YELLOW}⚠️  Há mudanças locais não commitadas.${NC}"
+        echo -e "${YELLOW}   Arquivos modificados:${NC}"
+        git status --short 2>/dev/null | head -10
+        echo ""
+        echo -e "${YELLOW}💡 Opções:${NC}"
+        echo -e "${YELLOW}   1. Fazer stash das mudanças (recomendado)${NC}"
+        echo -e "${YELLOW}   2. Descartar mudanças locais${NC}"
+        echo -e "${YELLOW}   3. Cancelar deploy${NC}"
+        echo ""
+        read -p "Escolha uma opção (1/2/3) [1]: " choice
+        choice=${choice:-1}
+        
+        case $choice in
+            1)
+                echo -e "${BLUE}💾 Fazendo stash das mudanças locais...${NC}"
+                git stash push -m "Stash antes do deploy - $(date '+%Y-%m-%d %H:%M:%S')" || {
+                    echo -e "${RED}❌ Erro ao fazer stash. Continuando...${NC}"
+                }
+                ;;
+            2)
+                echo -e "${YELLOW}🗑️  Descartando mudanças locais...${NC}"
+                git reset --hard HEAD || {
+                    echo -e "${RED}❌ Erro ao descartar mudanças. Continuando...${NC}"
+                }
+                git clean -fd || true
+                ;;
+            3)
+                echo -e "${RED}❌ Deploy cancelado pelo usuário.${NC}"
+                exit 1
+                ;;
+        esac
+    fi
+    
+    # Verificar branch atual
+    CURRENT_BRANCH=$(git branch --show-current 2>/dev/null || git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+    
+    if [ -n "$CURRENT_BRANCH" ] && [ "$CURRENT_BRANCH" != "$GIT_BRANCH" ]; then
+        echo -e "${BLUE}🔄 Mudando para branch ${GIT_BRANCH}...${NC}"
+        git checkout "$GIT_BRANCH" || {
+            echo -e "${YELLOW}⚠️  Não foi possível mudar para branch ${GIT_BRANCH}. Continuando na branch atual.${NC}"
+            GIT_BRANCH="$CURRENT_BRANCH"
+        }
+    fi
+    
+    # Fazer fetch
+    echo -e "${BLUE}📡 Buscando atualizações do GitHub...${NC}"
+    git fetch "$GIT_REMOTE" "$GIT_BRANCH" || {
+        echo -e "${YELLOW}⚠️  Erro ao fazer fetch. Tentando fetch de todas as branches...${NC}"
+        git fetch "$GIT_REMOTE" || {
+            echo -e "${RED}❌ Erro ao fazer fetch do GitHub. Continuando com código local...${NC}"
+            SKIP_PULL=true
+        }
+    }
+    
+    if [ "$SKIP_PULL" = false ]; then
+        # Verificar se há atualizações
+        LOCAL_COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "")
+        REMOTE_COMMIT=$(git rev-parse "$GIT_REMOTE/$GIT_BRANCH" 2>/dev/null || echo "")
+        
+        if [ -n "$LOCAL_COMMIT" ] && [ -n "$REMOTE_COMMIT" ] && [ "$LOCAL_COMMIT" != "$REMOTE_COMMIT" ]; then
+            echo -e "${GREEN}📦 Encontradas atualizações no GitHub!${NC}"
+            echo -e "${BLUE}   Local:  ${LOCAL_COMMIT:0:7}${NC}"
+            echo -e "${BLUE}   Remote: ${REMOTE_COMMIT:0:7}${NC}"
+            
+            # Mostrar commits que serão aplicados
+            echo ""
+            echo -e "${BLUE}📝 Novos commits:${NC}"
+            git log --oneline "$LOCAL_COMMIT..$REMOTE_COMMIT" 2>/dev/null | head -5 || true
+            echo ""
+            
+            # Fazer pull
+            echo -e "${BLUE}⬇️  Fazendo pull das atualizações...${NC}"
+            git pull "$GIT_REMOTE" "$GIT_BRANCH" || {
+                echo -e "${RED}❌ Erro ao fazer pull. Pode haver conflitos.${NC}"
+                echo -e "${YELLOW}💡 Tente resolver os conflitos manualmente e execute o deploy novamente.${NC}"
+                exit 1
+            }
+            
+            echo -e "${GREEN}✅ Código atualizado do GitHub${NC}"
+        else
+            echo -e "${GREEN}✅ Código já está atualizado${NC}"
+        fi
+    fi
+else
+    echo -e "${YELLOW}⏭️  Atualização do GitHub pulada (--skip-pull ou não é repositório Git)${NC}"
 fi
 
 # Verificar se Node.js está instalado
@@ -102,6 +238,12 @@ fi
 echo ""
 echo -e "${BLUE}📦 Instalando/Atualizando dependências...${NC}"
 npm install --include=dev
+
+# Verificar se houve mudanças no package.json ou package-lock.json após o pull
+if [ "$SKIP_PULL" = false ] && [ -f "package-lock.json" ]; then
+    echo -e "${BLUE}🔍 Verificando se há novas dependências...${NC}"
+    npm install --include=dev
+fi
 
 # Verificar se o vite foi instalado
 if [ ! -f "node_modules/.bin/vite" ] && [ ! -d "node_modules/vite" ]; then
@@ -265,6 +407,23 @@ echo -e "${GREEN}✅ Deploy concluído com sucesso!${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo ""
 
+# Mostrar informações do Git
+if [ "$SKIP_PULL" = false ] && [ -d ".git" ]; then
+    CURRENT_COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "")
+    CURRENT_BRANCH=$(git branch --show-current 2>/dev/null || echo "")
+    LAST_COMMIT_MSG=$(git log -1 --pretty=format:"%s" 2>/dev/null || echo "")
+    
+    if [ -n "$CURRENT_COMMIT" ]; then
+        echo -e "${BLUE}📌 Informações do Git:${NC}"
+        echo -e "   Branch: ${GREEN}${CURRENT_BRANCH}${NC}"
+        echo -e "   Commit: ${GREEN}${CURRENT_COMMIT}${NC}"
+        if [ -n "$LAST_COMMIT_MSG" ]; then
+            echo -e "   Mensagem: ${YELLOW}${LAST_COMMIT_MSG}${NC}"
+        fi
+        echo ""
+    fi
+fi
+
 if [ "$SKIP_PM2" = false ]; then
     echo -e "${BLUE}📊 Status da aplicação:${NC}"
     pm2 status
@@ -280,4 +439,7 @@ fi
 echo -e "${BLUE}🌐 Acesse:${NC}"
 echo "   Local:  http://localhost:${PORT:-3000}"
 echo "   Produção: https://hsfasaude.com.br"
+echo ""
+echo -e "${BLUE}💡 Próximo deploy:${NC}"
+echo "   Execute: ${YELLOW}./deploy.sh${NC} para atualizar do GitHub e fazer deploy"
 echo ""

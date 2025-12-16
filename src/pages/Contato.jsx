@@ -25,11 +25,8 @@ function Contato() {
     setMessage({ type: '', text: '' })
 
     try {
-      // Em produção, descomente a linha abaixo
-      // await contatoService.send(formData)
-      
-      // Simulação de envio
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Enviar formulário para o backend
+      await contatoService.send(formData)
       
       setMessage({ 
         type: 'success', 

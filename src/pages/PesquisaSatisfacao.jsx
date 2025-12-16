@@ -94,11 +94,8 @@ function PesquisaSatisfacao() {
     setLoading(true)
 
     try {
-      // Em produção, descomente a linha abaixo e configure o endpoint
-      // await contatoService.sendPesquisa(formData)
-      
-      // Simulação de envio
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      // Enviar pesquisa para o backend
+      await contatoService.sendPesquisa(formData)
       
       alert('Pesquisa cadastrada com sucesso! Obrigado!')
       navigate('/')

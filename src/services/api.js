@@ -1,8 +1,11 @@
 import axios from 'axios'
 
 // Configuração base da API
-// Em produção, isso deve apontar para o backend PHP ou uma API Node.js
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost/api'
+// Em desenvolvimento: Vite proxy redireciona /api para http://localhost:3000
+// Em produção: usa URL relativa para o mesmo servidor Node.js
+// IMPORTANTE: Em desenvolvimento, não usar baseURL para evitar duplicação com o proxy do Vite
+const isDevelopment = import.meta.env.DEV;
+const API_BASE_URL = isDevelopment ? '' : (import.meta.env.VITE_API_URL || '');
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -27,8 +30,11 @@ export const editaisService = {
 }
 
 export const contatoService = {
-  send: (data) => api.post('/enviaMensagem.php', data),
-  sendPesquisa: (data) => api.post('/enviaPesquisa.php', data),
+  // Usando novos endpoints Node.js
+  // Em desenvolvimento: Vite proxy redireciona /api para http://localhost:3000
+  // Em produção: URL relativa funciona diretamente
+  send: (data) => api.post('/api/contato', data),
+  sendPesquisa: (data) => api.post('/api/pesquisa', data),
 }
 
 export default api

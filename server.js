@@ -2,6 +2,7 @@ import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join, extname } from 'path';
 import { readFileSync, existsSync, writeFileSync, mkdirSync } from 'fs';
+import emailService from './services/emailService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -13,10 +14,108 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// CORS middleware para permitir requisições do frontend
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+
 // IMPORTANTE: Rotas específicas devem vir ANTES do express.static para evitar conflitos
 // /assinaturas (sem barra) vai para o React Router para ter o layout completo
 // /assinaturas/ (com barra) também vai para o React Router
 // Apenas arquivos específicos como /assinaturas/carimbo.html são servidos diretamente
+
+// Função auxiliar para processar formulário de contato
+const processContactForm = async (req, res) => {
+  try {
+    const { nome, email, assunto, celular, message } = req.body;
+    
+    // Validações
+    if (!nome || !email || !assunto || !message) {
+      return res.status(400).json({
+        success: false,
+        message: 'Campos obrigatórios: nome, email, assunto e mensagem'
+      });
+    }
+    
+    // Enviar email se o serviço estiver configurado
+    if (emailService.isConfigured()) {
+      try {
+        await emailService.sendContactForm({ nome, email, assunto, celular, message });
+      } catch (emailError) {
+        console.error('Erro ao enviar email:', emailError);
+        // Continuar mesmo se o email falhar
+      }
+    } else {
+      console.warn('Serviço de email não configurado. Configure as variáveis de ambiente.');
+    }
+    
+    res.json({
+      success: true,
+      message: 'Mensagem enviada com sucesso!'
+    });
+  } catch (error) {
+    console.error('Erro ao processar formulário de contato:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro ao processar a mensagem. Tente novamente mais tarde.'
+    });
+  }
+};
+
+// Função auxiliar para processar pesquisa de satisfação
+const processSatisfactionSurvey = async (req, res) => {
+  try {
+    const formData = req.body;
+    
+    // Validações básicas
+    if (!formData.nome || !formData.email || !formData.celular) {
+      return res.status(400).json({
+        success: false,
+        message: 'Campos obrigatórios: nome, email e celular'
+      });
+    }
+    
+    // Enviar email se o serviço estiver configurado
+    if (emailService.isConfigured()) {
+      try {
+        await emailService.sendSatisfactionSurvey(formData);
+      } catch (emailError) {
+        console.error('Erro ao enviar email:', emailError);
+        // Continuar mesmo se o email falhar
+      }
+    } else {
+      console.warn('Serviço de email não configurado. Configure as variáveis de ambiente.');
+    }
+    
+    res.json({
+      success: true,
+      message: 'Pesquisa enviada com sucesso!'
+    });
+  } catch (error) {
+    console.error('Erro ao processar pesquisa de satisfação:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro ao processar a pesquisa. Tente novamente mais tarde.'
+    });
+  }
+};
+
+// API para enviar formulário de contato (novo endpoint Node.js)
+app.post('/api/contato', processContactForm);
+
+// API para enviar pesquisa de satisfação (novo endpoint Node.js)
+app.post('/api/pesquisa', processSatisfactionSurvey);
+
+// Endpoints de compatibilidade com nomes .php (mantidos para não quebrar código existente)
+app.post('/enviaMensagem.php', processContactForm);
+app.post('/enviaPesquisa.php', processSatisfactionSurvey);
 
 // API para obter o conteúdo HTML do carimbo (apenas o body)
 app.get('/assinaturas/api/conteudo', (req, res) => {
@@ -166,6 +265,23 @@ Assinatura digital salva com sucesso!
     // Salvar o arquivo TXT
     const caminhoTxt = join(diretorio, `${nomeArquivoFinal}.txt`);
     writeFileSync(caminhoTxt, conteudoTxt, 'utf-8');
+    
+    // Enviar email de notificação se o serviço estiver configurado
+    if (emailService.isConfigured()) {
+      try {
+        await emailService.sendSignatureNotification({
+          nome,
+          cargo,
+          empresa,
+          registro,
+          nomeArquivo: nomeArquivoFinal,
+          dataHora
+        });
+      } catch (emailError) {
+        console.error('Erro ao enviar email de notificação:', emailError);
+        // Continuar mesmo se o email falhar
+      }
+    }
     
     // Resposta de sucesso
     res.json({
